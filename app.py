@@ -1,7 +1,17 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import pickle
 import os
+
+# ===========================
+# Page Config (set first)
+# ===========================
+st.set_page_config(
+    page_title="Customer Churn Prediction",
+    layout="centered",
+)
+
 # ===========================
 # Paths
 # ===========================
@@ -43,14 +53,6 @@ else:
     st.warning(f"CSS file not found at {STYLE_PATH}. Using default styling.")
 
 # ===========================
-# Page Config
-# ===========================
-st.set_page_config(
-    page_title="Customer Churn Prediction",
-    layout="centered",
-)
-
-# ===========================
 # App Header
 # ===========================
 st.markdown("<h1 class='title'>Customer Churn Prediction</h1>", unsafe_allow_html=True)
@@ -73,8 +75,8 @@ with st.form("churn_form"):
         phone_service = st.selectbox("Phone Service", ["Yes", "No"])
         internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
         contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
-        monthly_charges = st.number_input("Monthly Charges", min_value=0.0, step=0.1)
-        total_charges = st.number_input("Total Charges", min_value=0.0, step=0.1)
+        monthly_charges = st.number_input("Monthly Charges", min_value=0.0, step=0.1, format="%.2f")
+        total_charges = st.number_input("Total Charges", min_value=0.0, step=0.1, format="%.2f")
 
     submitted = st.form_submit_button("Predict")
 
@@ -94,12 +96,3 @@ if submitted:
 
     try:
         processed = preprocessor.transform(input_data)
-        prediction = model.predict(processed)[0]
-        prob = model.predict_proba(processed)[0][1]
-
-        if prediction == 1:
-            st.markdown(f"<div class='card red'>Likely to Churn<br><span class='prob'>Probability: {prob:.2%}</span></div>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<div class='card green'>Not Likely to Churn<br><span class='prob'>Probability: {prob:.2%}</span></div>", unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Error during prediction: {e}")
