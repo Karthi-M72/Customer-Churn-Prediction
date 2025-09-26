@@ -96,3 +96,19 @@ if submitted:
 
     try:
         processed = preprocessor.transform(input_data)
+        prediction = model.predict(processed)[0]
+        prob = model.predict_proba(processed)[0][1]
+
+        if prediction == 1:
+            st.markdown(
+                f"<div class='card red'>Likely to Churn<br><span class='prob'>Probability: {prob:.2%}</span></div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f"<div class='card green'>Not Likely to Churn<br><span class='prob'>Probability: {prob:.2%}</span></div>",
+                unsafe_allow_html=True,
+            )
+
+    except Exception as e:
+        st.error(f"Error during prediction: {e}")
